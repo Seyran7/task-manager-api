@@ -1,5 +1,6 @@
 package com.seyran.taskmanager.controller;
 
+import com.seyran.taskmanager.dto.TaskDto;
 import com.seyran.taskmanager.entity.Task;
 import com.seyran.taskmanager.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -9,20 +10,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/tasks")
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task){
-        return ResponseEntity.ok(taskService.createTask(task));
+    public ResponseEntity<TaskDto> createTask(@RequestBody TaskDto taskDto){
+        return ResponseEntity.ok(taskService.createTask(taskDto));
     }
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks(){
+    public ResponseEntity<List<TaskDto>> getAllTasks(){
         return ResponseEntity.ok(taskService.findAll());
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public void deleteTask(@RequestParam Long id){
         taskService.deleteTask(id);
     }

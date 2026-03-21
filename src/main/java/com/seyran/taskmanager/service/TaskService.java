@@ -1,6 +1,8 @@
 package com.seyran.taskmanager.service;
 
+import com.seyran.taskmanager.dto.TaskDto;
 import com.seyran.taskmanager.entity.Task;
+import com.seyran.taskmanager.mapper.TaskMapper;
 import com.seyran.taskmanager.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,14 +13,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-    public List<Task> findAll() {
-        return taskRepository.findAll();
+    public List<TaskDto> findAll() {
+        return taskRepository.findAll()
+                .stream()
+                .map(TaskMapper::toDto)
+                .toList();
     }
     public void deleteTask(Long id){
         taskRepository.deleteById(id);
     }
-    public Task createTask(Task task){
-        return taskRepository.save(task);
+    public TaskDto createTask(TaskDto taskDto) {
+        Task task = TaskMapper.toEntity(taskDto);
+        return TaskMapper.toDto(taskRepository.save(task));
     }
 
 }
