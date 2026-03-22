@@ -26,5 +26,9 @@ public class TaskService {
         Task task = TaskMapper.toEntity(taskDto);
         return TaskMapper.toDto(taskRepository.save(task));
     }
+    public TaskDto getById(Long id){
+        Task task = taskRepository.findById(id).orElseThrow(()->new RuntimeException("Task not found"));
+        return TaskMapper.toDto(task);
+    }
 
 }
