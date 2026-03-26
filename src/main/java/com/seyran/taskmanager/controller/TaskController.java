@@ -1,6 +1,8 @@
 package com.seyran.taskmanager.controller;
 
 import com.seyran.taskmanager.dto.TaskDto;
+import com.seyran.taskmanager.entity.Status;
+import com.seyran.taskmanager.entity.Task;
 import com.seyran.taskmanager.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,6 +49,15 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<Page<TaskDto>> getAllTasks(Pageable pageable){
         return ResponseEntity.ok(taskService.getAll(pageable));
+    }
+    @GetMapping("/status")
+    public List<Task> getTasksByStatus(@RequestParam Status status) {
+        return taskService.getByStatus(status);
+    }
+
+    @GetMapping("/search")
+    public List<Task> searchTasks(@RequestParam String title) {
+        return taskService.searchByTitle(title);
     }
 
 }

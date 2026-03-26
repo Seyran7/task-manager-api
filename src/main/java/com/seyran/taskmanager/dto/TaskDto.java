@@ -1,5 +1,6 @@
 package com.seyran.taskmanager.dto;
 
+import com.seyran.taskmanager.entity.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -20,5 +21,5 @@ public class TaskDto {
     @Schema(example = "Practice project")
     @NotBlank(message = "Description cannot be empty")
     private String description;
-    private String status;
+    private Status status;
 }

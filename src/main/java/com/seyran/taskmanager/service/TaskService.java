@@ -1,6 +1,7 @@
 package com.seyran.taskmanager.service;
 
 import com.seyran.taskmanager.dto.TaskDto;
+import com.seyran.taskmanager.entity.Status;
 import com.seyran.taskmanager.entity.Task;
 import com.seyran.taskmanager.mapper.TaskMapper;
 import com.seyran.taskmanager.repository.TaskRepository;
@@ -47,5 +48,12 @@ public class TaskService {
     }
     public Page<TaskDto>getAll(Pageable pageable){
         return taskRepository.findAll(pageable).map(TaskMapper::toDto);
+    }
+    public List<Task> getByStatus(Status status) {
+        return taskRepository.findByStatus(status);
+    }
+
+    public List<Task> searchByTitle(String title) {
+        return taskRepository.findByTitleContainingIgnoreCase(title);
     }
 }
