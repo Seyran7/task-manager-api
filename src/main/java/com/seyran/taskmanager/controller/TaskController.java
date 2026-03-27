@@ -3,6 +3,7 @@ package com.seyran.taskmanager.controller;
 import com.seyran.taskmanager.dto.TaskDto;
 import com.seyran.taskmanager.entity.Status;
 import com.seyran.taskmanager.entity.Task;
+import com.seyran.taskmanager.repository.TaskRepository;
 import com.seyran.taskmanager.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;
+    private final TaskRepository taskRepository;
 
     @Operation(summary="Create task")
     @PostMapping
@@ -58,6 +61,17 @@ public class TaskController {
     @GetMapping("/search")
     public List<Task> searchTasks(@RequestParam String title) {
         return taskService.searchByTitle(title);
+    }
+    @GetMapping("/sorted")
+    public List<Task> getSortedTasks(
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() :
+                Sort.by(sortBy).ascending();
+
+        return taskRepository.findAll(sort);
     }
 
 }
