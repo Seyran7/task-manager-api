@@ -2,8 +2,6 @@ package com.seyran.taskmanager.controller;
 
 import com.seyran.taskmanager.dto.TaskDto;
 import com.seyran.taskmanager.entity.Status;
-import com.seyran.taskmanager.entity.Task;
-import com.seyran.taskmanager.repository.TaskRepository;
 import com.seyran.taskmanager.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,67 +9,76 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@Tag(name="Task API,description=Operations for tasks")
+
+@Tag(name = "Task API", description = "Operations for tasks")
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
 public class TaskController {
-    private final TaskService taskService;
-    private final TaskRepository taskRepository;
 
-    @Operation(summary="Create task")
+    private final TaskService taskService;
+
+
+    @Operation(summary = "Create task")
     @PostMapping
-    public ResponseEntity<TaskDto> createTask(@Valid @RequestBody TaskDto taskDto){
+    public ResponseEntity<TaskDto> createTask(@Valid @RequestBody TaskDto taskDto) {
         return ResponseEntity.ok(taskService.createTask(taskDto));
     }
 
-    @Operation(summary="Get all tasks")
+    @Operation(summary = "Get all tasks with pagination")
     @GetMapping
-    public ResponseEntity<List<TaskDto>> getAllTasks(){
-        return ResponseEntity.ok(taskService.findAll());
-    }
-    @Operation(summary="Uptade task")
-    @PutMapping("/{id}")
-    public ResponseEntity<TaskDto> updateTask( @PathVariable Long id, @RequestBody TaskDto taskDto){
-        return ResponseEntity.ok(taskService.updateTask(id, taskDto));
-    }
-    @GetMapping("/id")
-    public ResponseEntity<TaskDto> getById(@RequestParam Long id){
-        return ResponseEntity.ok(taskService.getById(id));
-    }
-    @Operation(summary = "Delete task")
-    @DeleteMapping("/{id}")
-    public void deleteTask(@RequestParam Long id){
-        taskService.deleteTask(id);
-    }
-    @GetMapping
-    public ResponseEntity<Page<TaskDto>> getAllTasks(Pageable pageable){
+    public ResponseEntity<Page<TaskDto>> getAllTasks(Pageable pageable) {
         return ResponseEntity.ok(taskService.getAll(pageable));
     }
-    @GetMapping("/status")
-    public List<Task> getTasksByStatus(@RequestParam Status status) {
-        return taskService.getByStatus(status);
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.getById(id));
     }
 
-    @GetMapping("/search")
-    public List<Task> searchTasks(@RequestParam String title) {
-        return taskService.searchByTitle(title);
+
+    @Operation(summary = "Update task")
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskDto> updateTask(@PathVariable Long id,
+                                              @RequestBody TaskDto taskDto) {
+        return ResponseEntity.ok(taskService.updateTask(id, taskDto));
     }
+
+    @Operation(summary = "Delete task")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/status")
+    public ResponseEntity<Page<TaskDto>> getTasksByStatus(
+            @RequestParam Status status,
+            Pageable pageable) {
+
+        return ResponseEntity.ok(taskService.getByStatus(status, pageable));
+    }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<TaskDto>> searchTasks(
+            @RequestParam String title,
+            Pageable pageable) {
+
+        return ResponseEntity.ok(taskService.searchByTitle(title, pageable));
+    }
+
+
     @GetMapping("/sorted")
-    public List<Task> getSortedTasks(
+    public List<TaskDto> getSortedTasks(
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction
     ) {
-        Sort sort = direction.equalsIgnoreCase("desc") ?
-                Sort.by(sortBy).descending() :
-                Sort.by(sortBy).ascending();
-
-        return taskRepository.findAll(sort);
+        return taskService.getSortedTasks(sortBy, direction);
     }
-
 }
