@@ -1,5 +1,6 @@
 package com.seyran.taskmanager.controller;
 
+import com.seyran.taskmanager.dto.ApiResponse;
 import com.seyran.taskmanager.dto.TaskDto;
 import com.seyran.taskmanager.entity.Status;
 import com.seyran.taskmanager.service.TaskService;
@@ -25,14 +26,30 @@ public class TaskController {
 
     @Operation(summary = "Create task")
     @PostMapping
-    public ResponseEntity<TaskDto> createTask(@Valid @RequestBody TaskDto taskDto) {
-        return ResponseEntity.ok(taskService.createTask(taskDto));
+    public ResponseEntity<ApiResponse<TaskDto>> createTask(@RequestBody TaskDto taskDto){
+        TaskDto created = taskService.createTask(taskDto);
+
+        return ResponseEntity.ok(
+                ApiResponse.<TaskDto>builder()
+                        .success(true)
+                        .message("Task created successfully")
+                        .data(created)
+                        .build()
+        );
     }
 
     @Operation(summary = "Get all tasks with pagination")
     @GetMapping
-    public ResponseEntity<Page<TaskDto>> getAllTasks(Pageable pageable) {
-        return ResponseEntity.ok(taskService.getAll(pageable));
+    public ResponseEntity<ApiResponse<Page<TaskDto>>> getAllTasks(Pageable pageable){
+        Page<TaskDto> tasks = taskService.getAll(pageable);
+
+        return ResponseEntity.ok(
+                ApiResponse.<Page<TaskDto>>builder()
+                        .success(true)
+                        .message("Tasks fetched successfully")
+                        .data(tasks)
+                        .build()
+        );
     }
 
     @GetMapping("/{id}")
