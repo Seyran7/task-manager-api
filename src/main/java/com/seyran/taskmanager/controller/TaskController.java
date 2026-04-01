@@ -51,10 +51,17 @@ public class TaskController {
                         .build()
         );
     }
-
     @GetMapping("/{id}")
-    public ResponseEntity<TaskDto> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(taskService.getById(id));
+    public ResponseEntity<ApiResponse<TaskDto>> getById(@PathVariable Long id){
+        TaskDto task = taskService.getById(id);
+
+        return ResponseEntity.ok(
+                ApiResponse.<TaskDto>builder()
+                        .success(true)
+                        .message("Task found")
+                        .data(task)
+                        .build()
+        );
     }
 
 
@@ -65,11 +72,17 @@ public class TaskController {
         return ResponseEntity.ok(taskService.updateTask(id, taskDto));
     }
 
-    @Operation(summary = "Delete task")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteTask(@PathVariable Long id){
         taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .success(true)
+                        .message("Task deleted successfully")
+                        .data(null)
+                        .build()
+        );
     }
 
 
