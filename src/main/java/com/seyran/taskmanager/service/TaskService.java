@@ -17,11 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
     public List<TaskDto> findAll() {
         return taskRepository.findAll()
                 .stream()
-                .map(TaskMapper::toDto)
+                .map(taskMapper::toDto)
                 .toList();
     }
 
@@ -31,12 +32,13 @@ public class TaskService {
 
     public TaskDto createTask(TaskDto taskDto) {
         Task task = TaskMapper.toEntity(taskDto);
-        return TaskMapper.toDto(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        return taskMapper.toDto(taskRepository.save(task));
     }
 
     public TaskDto getById(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
-        return TaskMapper.toDto(task);
+        return taskMapper.toDto(task);
     }
 
     public TaskDto updateTask(Long id, TaskDto taskDto) {
@@ -45,10 +47,10 @@ public class TaskService {
         task.setStatus(taskDto.getStatus());
         task.setDescription(taskDto.getDescription());
         task.setTitle(taskDto.getTitle());
-        return TaskMapper.toDto(taskRepository.save(task));
+        return taskMapper.toDto(taskRepository.save(task));
     }
     public Page<TaskDto>getAll(Pageable pageable){
-        return taskRepository.findAll(pageable).map(TaskMapper::toDto);
+        return taskRepository.findAll(pageable).map(taskMapper::toDto);
     }
     private TaskDto convertToDto(Task task) {
         return TaskDto.builder()

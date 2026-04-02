@@ -67,9 +67,19 @@ public class TaskController {
 
     @Operation(summary = "Update task")
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDto> updateTask(@PathVariable Long id,
-                                              @RequestBody TaskDto taskDto) {
-        return ResponseEntity.ok(taskService.updateTask(id, taskDto));
+    public ResponseEntity<ApiResponse<TaskDto>> updateTask(
+            @PathVariable Long id,
+            @RequestBody TaskDto taskDto) {
+
+        TaskDto updated = taskService.updateTask(id, taskDto);
+
+        return ResponseEntity.ok(
+                ApiResponse.<TaskDto>builder()
+                        .success(true)
+                        .message("Task updated successfully")
+                        .data(updated)
+                        .build()
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -87,28 +97,51 @@ public class TaskController {
 
 
     @GetMapping("/status")
-    public ResponseEntity<Page<TaskDto>> getTasksByStatus(
+    public ResponseEntity<ApiResponse<Page<TaskDto>>> getTasksByStatus(
             @RequestParam Status status,
             Pageable pageable) {
 
-        return ResponseEntity.ok(taskService.getByStatus(status, pageable));
+        Page<TaskDto> tasks = taskService.getByStatus(status, pageable);
+
+        return ResponseEntity.ok(
+                ApiResponse.<Page<TaskDto>>builder()
+                        .success(true)
+                        .message("Tasks filtered by status")
+                        .data(tasks)
+                        .build()
+        );
     }
 
-
     @GetMapping("/search")
-    public ResponseEntity<Page<TaskDto>> searchTasks(
+    public ResponseEntity<ApiResponse<Page<TaskDto>>> searchTasks(
             @RequestParam String title,
             Pageable pageable) {
 
-        return ResponseEntity.ok(taskService.searchByTitle(title, pageable));
+        Page<TaskDto> tasks = taskService.searchByTitle(title, pageable);
+
+        return ResponseEntity.ok(
+                ApiResponse.<Page<TaskDto>>builder()
+                        .success(true)
+                        .message("Search results")
+                        .data(tasks)
+                        .build()
+        );
     }
 
 
     @GetMapping("/sorted")
-    public List<TaskDto> getSortedTasks(
+    public ResponseEntity<ApiResponse<List<TaskDto>>> getSortedTasks(
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction
     ) {
-        return taskService.getSortedTasks(sortBy, direction);
+        List<TaskDto> tasks = taskService.getSortedTasks(sortBy, direction);
+
+        return ResponseEntity.ok(
+                ApiResponse.<List<TaskDto>>builder()
+                        .success(true)
+                        .message("Tasks sorted successfully")
+                        .data(tasks)
+                        .build()
+        );
     }
 }
