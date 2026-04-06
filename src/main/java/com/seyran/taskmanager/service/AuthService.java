@@ -4,6 +4,7 @@ import com.seyran.taskmanager.entity.User;
 import com.seyran.taskmanager.repository.UserRepository;
 import com.seyran.taskmanager.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
