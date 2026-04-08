@@ -1,5 +1,6 @@
 package com.seyran.taskmanager.service;
 
+import com.seyran.taskmanager.dto.PageResponse;
 import com.seyran.taskmanager.dto.TaskDto;
 import com.seyran.taskmanager.entity.Status;
 import com.seyran.taskmanager.entity.Task;
@@ -49,8 +50,23 @@ public class TaskService {
         task.setTitle(taskDto.getTitle());
         return taskMapper.toDto(taskRepository.save(task));
     }
-    public Page<TaskDto>getAll(Pageable pageable){
-        return taskRepository.findAll(pageable).map(taskMapper::toDto);
+    public PageResponse<TaskDto> getAllWithMeta(Pageable pageable) {
+
+        Page<Task> taskPage = taskRepository.findAll(pageable);
+
+        List<TaskDto> content = taskPage.getContent()
+                .stream()
+                .map(TaskMapper::toDto)
+                .toList();
+
+        return PageResponse.<TaskDto>builder()
+                .content(content)
+                .page(taskPage.getNumber())
+                .size(taskPage.getSize())
+                .totalElements(taskPage.getTotalElements())
+                .totalPages(taskPage.getTotalPages())
+                .last(taskPage.isLast())
+                .build();
     }
     private TaskDto convertToDto(Task task) {
         return TaskDto.builder()
