@@ -144,4 +144,8 @@ public class TaskController {
                         .build()
         );
     }
+    @GetMapping("/prefix")
+    public ResponseEntity<List<TaskDto>> getByPrefix(@RequestParam String prefix) {
+        return ResponseEntity.ok(taskService.getTasksByPrefix(prefix));
+    }
 }

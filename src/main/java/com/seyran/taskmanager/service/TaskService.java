@@ -34,7 +34,7 @@ public class TaskService {
     public TaskDto createTask(TaskDto taskDto) {
         Task task = TaskMapper.toEntity(taskDto);
         Task savedTask = taskRepository.save(task);
-        return taskMapper.toDto(taskRepository.save(task));
+        return taskMapper.toDto(savedTask);
     }
 
     public TaskDto getById(Long id) {
@@ -56,7 +56,7 @@ public class TaskService {
 
         List<TaskDto> content = taskPage.getContent()
                 .stream()
-                .map(TaskMapper::toDto)
+                .map(taskMapper::toDto)
                 .toList();
 
         return PageResponse.<TaskDto>builder()
@@ -92,6 +92,12 @@ public class TaskService {
 
         return taskRepository.findAll(sort).stream()
                 .map(this::convertToDto)
+                .toList();
+    }
+    public List<TaskDto> getTasksByPrefix(String prefix) {
+        return taskRepository.findByTitleStartingWithIgnoreCase(prefix)
+                .stream()
+                .map(taskMapper::toDto)
                 .toList();
     }
 }
