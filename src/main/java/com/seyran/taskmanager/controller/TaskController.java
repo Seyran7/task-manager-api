@@ -148,4 +148,8 @@ public class TaskController {
     public ResponseEntity<List<TaskDto>> getByPrefix(@RequestParam String prefix) {
         return ResponseEntity.ok(taskService.getTasksByPrefix(prefix));
     }
+    @GetMapping("/count-by-status")
+    public ResponseEntity<Long> countByStatus(@RequestParam Status status) {
+        return ResponseEntity.ok(taskService.countByStatus(status));
+    }
 }

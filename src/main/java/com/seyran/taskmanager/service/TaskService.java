@@ -100,4 +100,7 @@ public class TaskService {
                 .map(taskMapper::toDto)
                 .toList();
     }
+    public long countByStatus(Status status) {
+        return taskRepository.countByStatus(status);
+    }
 }

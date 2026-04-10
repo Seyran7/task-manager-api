@@ -17,4 +17,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByTitleStartingWithIgnoreCase(String prefix);
 
+    long countByStatus(Status status);
+
 }
