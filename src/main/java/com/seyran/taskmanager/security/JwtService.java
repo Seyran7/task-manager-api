@@ -1,12 +1,17 @@
 package com.seyran.taskmanager.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+@Service
 public class JwtService {
-    private final String SECRET= "mysecretkey123";
+
+    private final String SECRET = "mysecretkey123";
+
     public String generateToken(String username){
         return Jwts.builder()
                 .setSubject(username)
@@ -15,11 +20,15 @@ public class JwtService {
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
+
     public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    private Claims extractAllClaims(String token){
         return Jwts.parser()
                 .setSigningKey(SECRET)
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 }

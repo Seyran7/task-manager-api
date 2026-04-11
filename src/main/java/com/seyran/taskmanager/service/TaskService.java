@@ -11,8 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +50,7 @@ public class TaskService {
         task.setTitle(taskDto.getTitle());
         return taskMapper.toDto(taskRepository.save(task));
     }
-    public PageResponse<TaskDto> getAllWithMeta(Pageable pageable) {
+    public PageResponse<TaskDto> getAll(Pageable pageable) {
 
         Page<Task> taskPage = taskRepository.findAll(pageable);
 
