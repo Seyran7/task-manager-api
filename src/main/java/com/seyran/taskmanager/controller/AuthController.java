@@ -1,5 +1,7 @@
 package com.seyran.taskmanager.controller;
 
+import com.seyran.taskmanager.dto.AuthRequest;
+import com.seyran.taskmanager.dto.AuthResponse;
 import com.seyran.taskmanager.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +14,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public String register(@RequestParam String username,
-                           @RequestParam String password){
-        return authService.register(username, password);
+    public AuthResponse register(@RequestBody AuthRequest request){
+        return authService.register(request);
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password){
-        return authService.login(username, password);
+    public AuthResponse login(@RequestBody AuthRequest request){
+        return authService.login(request);
     }
 }
