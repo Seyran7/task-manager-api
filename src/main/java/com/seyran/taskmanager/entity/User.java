@@ -18,4 +18,6 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

@@ -2,6 +2,7 @@ package com.seyran.taskmanager.service;
 
 import com.seyran.taskmanager.dto.AuthRequest;
 import com.seyran.taskmanager.dto.AuthResponse;
+import com.seyran.taskmanager.entity.Role;
 import com.seyran.taskmanager.entity.User;
 import com.seyran.taskmanager.repository.UserRepository;
 import com.seyran.taskmanager.security.JwtService;
@@ -22,6 +23,7 @@ public class AuthService {
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
