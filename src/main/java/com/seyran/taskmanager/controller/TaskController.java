@@ -39,7 +39,7 @@ public class TaskController {
 
     @Operation(summary = "Get all tasks with pagination")
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<TaskDto>>> getAllTasks(Pageable pageable){
+    public ResponseEntity<ApiResponse<Page<TaskDto>>> getAllTasks(Page pageable){
         Page<TaskDto> tasks = taskService.getAll(pageable);
 
         return ResponseEntity.ok(
@@ -51,14 +51,14 @@ public class TaskController {
         );
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<TaskDto>> getById(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<Page<TaskDto>>> getById(@PathVariable Long id){
         TaskDto task = taskService.getById(id);
 
         return ResponseEntity.ok(
-                ApiResponse.<TaskDto>builder()
+                ApiResponse.<Page<TaskDto>>builder()
                         .success(true)
-                        .message("Task found")
-                        .data(task)
+                        .message("Tasks fetched successfully")
+                        .data((Page<TaskDto>) task)
                         .build()
         );
     }
@@ -150,5 +150,9 @@ public class TaskController {
     @GetMapping("/count-by-status")
     public ResponseEntity<Long> countByStatus(@RequestParam Status status) {
         return ResponseEntity.ok(taskService.countByStatus(status));
+    }
+    @GetMapping("/admin/test")
+    public String adminOnly(){
+        return "Only ADMIN can see this";
     }
 }
