@@ -17,6 +17,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private String accessToken;
+    private String refreshToken;
 
     public AuthResponse register(AuthRequest request){
 
