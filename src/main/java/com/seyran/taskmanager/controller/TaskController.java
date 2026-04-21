@@ -1,7 +1,9 @@
 package com.seyran.taskmanager.controller;
 
 import com.seyran.taskmanager.dto.ApiResponse;
+import com.seyran.taskmanager.dto.AuthResponse;
 import com.seyran.taskmanager.dto.TaskDto;
+import com.seyran.taskmanager.entity.RefreshToken;
 import com.seyran.taskmanager.entity.Status;
 import com.seyran.taskmanager.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -154,5 +156,17 @@ public class TaskController {
     @GetMapping("/admin/test")
     public String adminOnly(){
         return "Only ADMIN can see this";
+    }
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@RequestParam String refreshToken){
+
+        RefreshToken token = refreshTokenService.validateToken(refreshToken);
+
+        String newAccessToken = jwtService.generateToken(token.getUsername());
+
+        return AuthResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 }

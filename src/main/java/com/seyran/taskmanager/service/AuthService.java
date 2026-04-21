@@ -46,10 +46,13 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+
+        String accessToken = jwtService.generateToken(user.getUsername());
+        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername()).getToken();
 
         return AuthResponse.builder()
-                .token(token)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }
