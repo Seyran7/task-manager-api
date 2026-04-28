@@ -6,8 +6,8 @@ import com.seyran.taskmanager.dto.TaskDto;
 import com.seyran.taskmanager.entity.RefreshToken;
 import com.seyran.taskmanager.entity.Status;
 import com.seyran.taskmanager.service.TaskService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.seyran.taskmanager.service.RefreshTokenService;
+import com.seyran.taskmanager.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,16 +16,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Task API", description = "Operations for tasks")
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
 public class TaskController {
 
     private final TaskService taskService;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtService jwtService;
 
-
-    @Operation(summary = "Create task")
     @PostMapping
     public ResponseEntity<ApiResponse<TaskDto>> createTask(@RequestBody TaskDto taskDto){
         TaskDto created = taskService.createTask(taskDto);
@@ -33,40 +32,40 @@ public class TaskController {
         return ResponseEntity.ok(
                 ApiResponse.<TaskDto>builder()
                         .success(true)
-                        .message("Task created successfully")
+                        .message("Task created")
                         .data(created)
                         .build()
         );
     }
 
-    @Operation(summary = "Get all tasks with pagination")
+    // ✅ FIX: Pageable
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<TaskDto>>> getAllTasks(Page pageable){
+    public ResponseEntity<ApiResponse<Page<TaskDto>>> getAllTasks(Pageable pageable){
         Page<TaskDto> tasks = taskService.getAll(pageable);
 
         return ResponseEntity.ok(
                 ApiResponse.<Page<TaskDto>>builder()
                         .success(true)
-                        .message("Tasks fetched successfully")
+                        .message("Tasks fetched")
                         .data(tasks)
                         .build()
         );
     }
+
+    // ✅ FIX: TaskDto
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Page<TaskDto>>> getById(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<TaskDto>> getById(@PathVariable Long id){
         TaskDto task = taskService.getById(id);
 
         return ResponseEntity.ok(
-                ApiResponse.<Page<TaskDto>>builder()
+                ApiResponse.<TaskDto>builder()
                         .success(true)
-                        .message("Tasks fetched successfully")
-                        .data((Page<TaskDto>) task)
+                        .message("Task found")
+                        .data(task)
                         .build()
         );
     }
 
-
-    @Operation(summary = "Update task")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<TaskDto>> updateTask(
             @PathVariable Long id,
@@ -77,7 +76,7 @@ public class TaskController {
         return ResponseEntity.ok(
                 ApiResponse.<TaskDto>builder()
                         .success(true)
-                        .message("Task updated successfully")
+                        .message("Task updated")
                         .data(updated)
                         .build()
         );
@@ -90,25 +89,22 @@ public class TaskController {
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .success(true)
-                        .message("Task deleted successfully")
+                        .message("Task deleted")
                         .data(null)
                         .build()
         );
     }
-
 
     @GetMapping("/status")
     public ResponseEntity<ApiResponse<Page<TaskDto>>> getTasksByStatus(
             @RequestParam Status status,
             Pageable pageable) {
 
-        Page<TaskDto> tasks = taskService.getByStatus(status, pageable);
-
         return ResponseEntity.ok(
                 ApiResponse.<Page<TaskDto>>builder()
                         .success(true)
-                        .message("Tasks filtered by status")
-                        .data(tasks)
+                        .message("Filtered")
+                        .data(taskService.getByStatus(status, pageable))
                         .build()
         );
     }
@@ -118,45 +114,36 @@ public class TaskController {
             @RequestParam String title,
             Pageable pageable) {
 
-        Page<TaskDto> tasks = taskService.searchByTitle(title, pageable);
-
         return ResponseEntity.ok(
                 ApiResponse.<Page<TaskDto>>builder()
                         .success(true)
-                        .message("Search results")
-                        .data(tasks)
+                        .message("Search")
+                        .data(taskService.searchByTitle(title, pageable))
                         .build()
         );
     }
-
 
     @GetMapping("/sorted")
     public ResponseEntity<ApiResponse<List<TaskDto>>> getSortedTasks(
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction
     ) {
-        List<TaskDto> tasks = taskService.getSortedTasks(sortBy, direction);
 
         return ResponseEntity.ok(
                 ApiResponse.<List<TaskDto>>builder()
                         .success(true)
-                        .message("Tasks sorted successfully")
-                        .data(tasks)
+                        .message("Sorted")
+                        .data(taskService.getSortedTasks(sortBy, direction))
                         .build()
         );
     }
-    @GetMapping("/prefix")
-    public ResponseEntity<List<TaskDto>> getByPrefix(@RequestParam String prefix) {
-        return ResponseEntity.ok(taskService.getTasksByPrefix(prefix));
-    }
-    @GetMapping("/count-by-status")
-    public ResponseEntity<Long> countByStatus(@RequestParam Status status) {
-        return ResponseEntity.ok(taskService.countByStatus(status));
-    }
+
     @GetMapping("/admin/test")
     public String adminOnly(){
-        return "Only ADMIN can see this";
+        return "Only ADMIN";
     }
+
+    // ✅ FIXED refresh
     @PostMapping("/refresh")
     public AuthResponse refresh(@RequestParam String refreshToken){
 
@@ -169,5 +156,4 @@ public class TaskController {
                 .refreshToken(refreshToken)
                 .build();
     }
-
 }
