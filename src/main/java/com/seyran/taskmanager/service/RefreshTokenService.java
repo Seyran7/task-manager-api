@@ -13,18 +13,20 @@ import java.util.UUID;
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshToken createRefreshToken(String username){
-        RefreshToken token =RefreshToken.builder()
+    public RefreshToken createRefreshToken(String username) {
+        RefreshToken token = RefreshToken.builder()
                 .token(UUID.randomUUID().toString())
                 .username(username)
                 .expiryDate(LocalDateTime.now().plusDays(7))
                 .build();
         return refreshTokenRepository.save(token);
     }
-    public RefreshToken validateToken(String token){
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(()->new RuntimeException("Refresh token not found"));
-        if(LocalDateTime.now().isAfter(refreshToken.getExpiryDate())){
+
+    public RefreshToken validateToken(String token) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Refresh token not found"));
+        if (LocalDateTime.now().isAfter(refreshToken.getExpiryDate())) {
             refreshTokenRepository.delete(refreshToken);
         }
+        return refreshToken;
     }
 }

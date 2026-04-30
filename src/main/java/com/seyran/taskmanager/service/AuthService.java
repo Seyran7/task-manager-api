@@ -2,7 +2,6 @@ package com.seyran.taskmanager.service;
 
 import com.seyran.taskmanager.dto.AuthRequest;
 import com.seyran.taskmanager.dto.AuthResponse;
-import com.seyran.taskmanager.entity.Role;
 import com.seyran.taskmanager.entity.User;
 import com.seyran.taskmanager.repository.UserRepository;
 import com.seyran.taskmanager.security.JwtService;
@@ -17,10 +16,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private String accessToken;
-    private String refreshToken;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthResponse register(AuthRequest request){
+    public AuthResponse register(AuthRequest request) {
 
         User user = User.builder()
                 .username(request.getUsername())
@@ -30,29 +28,44 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String token = jwtService.generateToken(user.getUsername());
+        String accessToken = jwtService.generateToken(
+                user.getUsername(),
+                user.getRole().name()
+        );
 
-        return AuthResponse.builder()
-                .token(token)
-                .build();
-    }
-
-    public AuthResponse login(AuthRequest request){
-
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new RuntimeException("Invalid password");
-        }
-
-
-        String accessToken = jwtService.generateToken(user.getUsername());
-        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername()).getToken();
+        RefreshToken refreshToken = refreshTokenService.createToken(
+                user.getUsername(),
+                user.getRole().name()
+        );
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .refreshToken(refreshToken.getToken())
+                .build();
+    }
+
+    public AuthResponse login(String username, String password) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        String accessToken = jwtService.generateToken(
+                user.getUsername(),
+                user.getRole().name()
+        );
+
+        RefreshToken refreshToken = refreshTokenService.createToken(
+                user.getUsername(),
+                user.getRole().name()
+        );
+
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getToken())
                 .build();
     }
 }
