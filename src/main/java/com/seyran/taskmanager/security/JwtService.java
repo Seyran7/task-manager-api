@@ -12,9 +12,10 @@ public class JwtService {
 
     private final String SECRET = "mysecretkey123";
 
-    public String generateToken(String username){
+    public String generateToken(String username,String role){
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role",role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(SignatureAlgorithm.HS512, SECRET)

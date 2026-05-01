@@ -22,8 +22,6 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
-    private final RefreshTokenService refreshTokenService;
-    private final JwtService jwtService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<TaskDto>> createTask(@RequestBody TaskDto taskDto){
