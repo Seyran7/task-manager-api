@@ -9,6 +9,7 @@ import com.seyran.taskmanager.service.AuthService;
 import com.seyran.taskmanager.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
