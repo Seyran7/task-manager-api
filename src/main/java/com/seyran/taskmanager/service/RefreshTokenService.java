@@ -37,4 +37,16 @@ public class RefreshTokenService {
         refreshToken.setRevoked(true);
         refreshTokenRepository.save(refreshToken);
     }
+    public RefreshToken createToken(String username, String role) {
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .token(UUID.randomUUID().toString())
+                .username(username)
+                .role(role)
+                .revoked(false)
+                .expiryDate(LocalDateTime.now().plusDays(7))
+                .build();
+
+        return refreshTokenRepository.save(refreshToken);
+    }
 }

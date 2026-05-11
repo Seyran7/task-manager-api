@@ -2,6 +2,8 @@ package com.seyran.taskmanager.service;
 
 import com.seyran.taskmanager.dto.AuthRequest;
 import com.seyran.taskmanager.dto.AuthResponse;
+import com.seyran.taskmanager.entity.RefreshToken;
+import com.seyran.taskmanager.entity.Role;
 import com.seyran.taskmanager.entity.User;
 import com.seyran.taskmanager.repository.UserRepository;
 import com.seyran.taskmanager.security.JwtService;
